@@ -6,8 +6,10 @@ module.exports = putMethods = (app, userCollections) => {
         const option = { upsert: true };
         const update = {
             $set: {
+                image: existData.image,
                 email: email,
                 name: existData.name,
+                address: existData.address,
                 role: existData.role,
             }
         }
