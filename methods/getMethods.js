@@ -1,4 +1,7 @@
+const verifyJWT = require("./verifyJWT");
+
 module.exports = getMethods = (app, userCollections) => {
+
     app.get("/users/:email", async (req, res) => {
         const params = req.params.email;
         const query = { email: params };
@@ -14,8 +17,9 @@ module.exports = getMethods = (app, userCollections) => {
         res.send(result)
     })
 
-    app.get("/users", async (req, res) => {
-        const result = await userCollections.find().toArray();
-        res.send(result)
+    
+    app.get("/users", verifyJWT, async (req, res) => {
+            const result = await userCollections.find().toArray();
+            res.send(result)
     })
 }
