@@ -26,6 +26,7 @@ module.exports = mongodb = (app) => {
             const userCollections = client.db("USER").collection("users");
             getMethods(app, userCollections);
             putMethods(app, userCollections);
+            patchMethods(app, userCollections);
             deleteMethods(app, userCollections);
 
 

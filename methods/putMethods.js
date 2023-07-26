@@ -17,5 +17,6 @@ module.exports = putMethods = (app, userCollections) => {
         const result = await userCollections.updateOne(query, update, option)
         console.log(result);
         res.send(result);
-    })
+    });
+
 }
