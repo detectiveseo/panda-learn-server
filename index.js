@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongodb = require('./mongodb');
+const jwt = require('./middlewear/jwt');
 const port = process.env.PORT || 3000;
 
 const app = express();
@@ -8,7 +9,8 @@ app.use(cors());
 app.use(express.json());
 
 
-mongodb(app)
+mongodb(app);
+jwt(app);
 
 
 
