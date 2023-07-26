@@ -1,3 +1,4 @@
+const deleteMethods = require('./methods/deleteMethods');
 const getMethods = require('./methods/getMethods');
 const patchMethods = require('./methods/patchMethods');
 const putMethods = require('./methods/putMethods');
@@ -23,8 +24,9 @@ module.exports = mongodb = (app) => {
 
             // database collections 
             const userCollections = client.db("USER").collection("users");
-            getMethods(app, userCollections)
+            getMethods(app, userCollections);
             putMethods(app, userCollections);
+            deleteMethods(app, userCollections);
 
 
         } finally {
