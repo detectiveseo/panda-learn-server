@@ -7,7 +7,7 @@ module.exports = verifyJwt = (req, res, next) => {
     const fromClintSideToken = authorization.split(" ")[1]
     jwt.verify(fromClintSideToken, process.env.TOKEYN_KEY, (err, decoded) => {
         if(err){
-            return res.status(401).send("unautorization access")
+            return res.status(402).send("unautorization access")
         }
         req.decoded = decoded; 
         next();

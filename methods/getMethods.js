@@ -1,6 +1,7 @@
+const { ObjectId } = require("mongodb");
 const verifyJWT = require("./verifyJWT");
 
-module.exports = getMethods = (app, userCollections) => {
+module.exports = getMethods = (app, userCollections, classesCollections) => {
 
     app.get("/users/:email", async (req, res) => {
         const params = req.params.email;
@@ -10,16 +11,37 @@ module.exports = getMethods = (app, userCollections) => {
     })
 
     //get users by filtering
-    app.get("/users/role/:type", async (req, res) => {
-        const params = req.params.type;
-        const query = { role: params };
+    app.get("/users/role/instructor", async (req, res) => {
+        const query = { role: "instructor" };
         const result = await userCollections.find(query).toArray();
         res.send(result)
     })
 
-    
+
     app.get("/users", verifyJWT, async (req, res) => {
+        const useEmail = req.decoded.email;
+        const findUser = { email: useEmail };
+        const getAdmin = await userCollections.findOne(findUser);
+        if (getAdmin?.role !== "admin") {
+            res.status(401).send("unauthorize accesse")
+        } else {
             const result = await userCollections.find().toArray();
             res.send(result)
+        }
+    })
+
+
+    app.get("/instructor/:id", async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id), role: "instructor" };
+        const result = await userCollections.find(query).toArray();
+        res.send(result);
+    })
+
+    //get all classes
+    app.get("/all-course", async(req, res) => {
+        const result = await classesCollections.find().toArray();
+        console.log(result);
+        res.send(result);
     })
 }
