@@ -41,6 +41,14 @@ module.exports = getMethods = (app, userCollections, classesCollections) => {
     //get all classes
     app.get("/all-course", async(req, res) => {
         const result = await classesCollections.find().toArray();
+        res.send(result);
+    })
+
+    //get single class 
+    app.get("/course/", async(req, res) => {
+        const id = req.query.id;
+        const query = {_id: new ObjectId(id)};
+        const result = await classesCollections.findOne(query);
         console.log(result);
         res.send(result);
     })
