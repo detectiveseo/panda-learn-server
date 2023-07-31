@@ -49,7 +49,6 @@ module.exports = getMethods = (app, userCollections, classesCollections) => {
         const id = req.query.id;
         const query = {_id: new ObjectId(id)};
         const result = await classesCollections.findOne(query);
-        console.log(result);
         res.send(result);
     })
 }
