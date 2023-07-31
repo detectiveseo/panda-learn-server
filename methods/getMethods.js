@@ -1,7 +1,7 @@
 const { ObjectId } = require("mongodb");
 const verifyJWT = require("./verifyJWT");
 
-module.exports = getMethods = (app, userCollections, classesCollections) => {
+module.exports = getMethods = (app, userCollections, classesCollections, paymentCollections) => {
 
     app.get("/users/:email", async (req, res) => {
         const params = req.params.email;
@@ -39,16 +39,36 @@ module.exports = getMethods = (app, userCollections, classesCollections) => {
     })
 
     //get all classes
-    app.get("/all-course", async(req, res) => {
+    app.get("/all-course", async (req, res) => {
         const result = await classesCollections.find().toArray();
         res.send(result);
     })
 
     //get single class 
-    app.get("/course/", async(req, res) => {
+    app.get("/course/", async (req, res) => {
         const id = req.query.id;
-        const query = {_id: new ObjectId(id)};
+        const query = { _id: new ObjectId(id) };
         const result = await classesCollections.findOne(query);
         res.send(result);
+    })
+
+    //get enroled user
+    app.get("/enroled/:id", verifyJWT, async (req, res) => {
+        const exactCoursId = req.params.id;
+        const query = { courseId: exactCoursId }
+        const getPaidUser = await paymentCollections.findOne(query);
+        if (getPaidUser) {
+            const paidUserEmail = getPaidUser.email;
+            const userEmail = req.decoded.email;
+            if (paidUserEmail === userEmail) {
+                res.send(true);
+            }
+            else {
+                res.send(false);
+            }
+        }
+        else {
+            res.send(false);
+        }
     })
 }

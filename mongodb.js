@@ -26,8 +26,9 @@ module.exports = mongodb = (app) => {
             // database collections 
             const userCollections = client.db("USER").collection("users");
             const classesCollections = client.db("COURSE").collection("classes")
-            getMethods(app, userCollections, classesCollections);
-            postMethods(app, classesCollections);
+            const paymentCollections = client.db("PAYMENT").collection("paid");
+            getMethods(app, userCollections, classesCollections, paymentCollections);
+            postMethods(app, classesCollections, paymentCollections);
             putMethods(app, userCollections);
             patchMethods(app, userCollections);
             deleteMethods(app, userCollections);
