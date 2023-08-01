@@ -42,8 +42,8 @@ module.exports = getMethods = (app, userCollections, classesCollections, payment
     app.get("/all-course", async (req, res) => {
         const key = req.query.keys;
         let query = {};
-        if(key){
-            query = {name: {$regex: key, $options: "i"}}
+        if (key) {
+            query = { name: { $regex: key, $options: "i" } }
         }
         const result = await classesCollections.find(query).toArray();
         res.send(result);
@@ -78,17 +78,20 @@ module.exports = getMethods = (app, userCollections, classesCollections, payment
         }
     })
 
-
     // get my classes 
-    app.get("/my-classes", verifyJWT, async(req, res) => {
+    app.get("/my-classes", verifyJWT, async (req, res) => {
         const email = req.decoded?.email;
-        const paidCourse = await  paymentCollections.find({email: email}).toArray();
-        console.log(paidCourse);
+        const paidCourse = await paymentCollections.find({ email: email }, { projection: { courseId: 1, _id: 0 } }).toArray();
+        const courseIds = paidCourse.map(item => item.courseId);
+        const query = {_id: {$in: courseIds.map(id => new ObjectId(id))}}
+        const result = await classesCollections.find(query).toArray();
+        res.send(result);
+
     })
 
-    app.get("/payment-history", verifyJWT, async(req, res) => {
+    app.get("/payment-history", verifyJWT, async (req, res) => {
         const email = req.decoded?.email;
-        const paidCourse = await  paymentCollections.find({email: email}).toArray();
-        res.send(paidCourse);
+        const paidCourse = await paymentCollections.find({ email: email }).toArray();
+        res.send(paidCourse)
     })
 }
