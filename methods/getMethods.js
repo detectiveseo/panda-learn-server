@@ -40,9 +40,15 @@ module.exports = getMethods = (app, userCollections, classesCollections, payment
 
     //get all classes
     app.get("/all-course", async (req, res) => {
-        const result = await classesCollections.find().toArray();
+        const key = req.query.keys;
+        let query = {};
+        if(key){
+            query = {name: {$regex: key, $options: "i"}}
+        }
+        const result = await classesCollections.find(query).toArray();
         res.send(result);
     })
+
 
     //get single class 
     app.get("/course/", async (req, res) => {
@@ -70,5 +76,19 @@ module.exports = getMethods = (app, userCollections, classesCollections, payment
         else {
             res.send(false);
         }
+    })
+
+
+    // get my classes 
+    app.get("/my-classes", verifyJWT, async(req, res) => {
+        const email = req.decoded?.email;
+        const paidCourse = await  paymentCollections.find({email: email}).toArray();
+        console.log(paidCourse);
+    })
+
+    app.get("/payment-history", verifyJWT, async(req, res) => {
+        const email = req.decoded?.email;
+        const paidCourse = await  paymentCollections.find({email: email}).toArray();
+        res.send(paidCourse);
     })
 }
