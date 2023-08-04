@@ -30,7 +30,7 @@ module.exports = mongodb = (app) => {
             getMethods(app, userCollections, classesCollections, paymentCollections);
             postMethods(app, classesCollections, paymentCollections);
             putMethods(app, userCollections);
-            patchMethods(app, userCollections);
+            patchMethods(app, userCollections, classesCollections);
             deleteMethods(app, userCollections);
 
 
