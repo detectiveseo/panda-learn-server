@@ -3,6 +3,9 @@ const verifyJWT = require("./verifyJWT");
 
 module.exports = getMethods = (app, userCollections, classesCollections, paymentCollections) => {
 
+    app.get("/", (req,res) => {
+        res.send("server in runing")
+    })
     app.get("/users/:email", async (req, res) => {
         const params = req.params.email;
         const query = { email: params };
