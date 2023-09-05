@@ -85,7 +85,8 @@ app.get("/", (req, res) => {
             const userCollections = client.db("USER").collection("users");
             const classesCollections = client.db("COURSE").collection("classes")
             const paymentCollections = client.db("PAYMENT").collection("paid");
-
+            const paymentHistoryCollections = client.db("PAYMENT").collection("CoursePayment");
+;
 
             app.get("/users/:email", async (req, res) => {
                 const params = req.params.email;
@@ -134,11 +135,6 @@ app.get("/", (req, res) => {
             })
 
 
-            app.get("/test", async(req, res) => {
-                res.send("mongo db is working")
-            })
-
-
             //get single class 
             app.get("/course/", async (req, res) => {
                 const id = req.query.id;
@@ -154,9 +150,11 @@ app.get("/", (req, res) => {
                 if(items){
                     const itemIds = items.map(itemId => new ObjectId(itemId));
                     query = {_id: { $in: itemIds }}
+                    const result = await classesCollections.find(query).toArray();
+                    res.send(result);
+                }else{
+                    res.send([])
                 }
-                const result = await classesCollections.find(query).toArray();
-                res.send(result);
             })
 
             //get enroled user
@@ -189,6 +187,7 @@ app.get("/", (req, res) => {
                 res.send(result);
             })
 
+            // get payment history 
             app.get("/payment-history", verifyJWT, async (req, res) => {
                 const email = req.decoded?.email;
                 const paidCourse = await paymentCollections.find({ email: email }).toArray();
@@ -203,9 +202,29 @@ app.get("/", (req, res) => {
             })
 
 
+            //stripe payment method
             app.post("/payments", async (req, res) => {
-                const payment = req.body;
-                const result = await paymentCollections.insertOne(payment);
+                const {amount} = req.body;
+                const amountSent = amount * 100;
+                try {
+                    const paymentIntent = await stripe.paymentIntents.create({
+                        amount: amountSent,
+                        currency: "usd",
+                        payment_method_types: ['card']
+                    });
+            
+                    res.send({
+                        clientSecret: paymentIntent.client_secret,
+                    });
+                } catch (error) {
+                    console.error("Error creating payment intent:", error);
+                    res.status(500).send("Error creating payment intent");
+                }
+            })
+
+            app.post("/add-payment", async(req, res) => {
+                const body = req.body;
+                const result = await paymentHistoryCollections.insertOne(body);
                 res.send(result);
             })
 
